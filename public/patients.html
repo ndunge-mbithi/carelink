@@ -1,74 +1,22 @@
-<h2>Patient Management</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Patient Records</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-<div class="card">
-  <input id="name" placeholder="Name">
-  <input id="age" placeholder="Age">
-  <input id="gender" placeholder="Gender">
-  <input id="location" placeholder="Location">
-  <button onclick="addPatient()">Add Patient</button>
-</div>
+  <div class="navbar">
+    <h2>Patient Records</h2>
+    <button onclick="goBack()">← Back</button>
+  </div>
 
-<h3>Patients</h3>
-<div id="list"></div>
+  <div class="container">
+    <h3>All Patients</h3>
+    <ul id="patientList"></ul>
+  </div>
 
-<script>
-const API = "http://localhost:3000";
-
-function addPatient() {
-  fetch(API + "/patients", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      name: name.value,
-      age: age.value,
-      gender: gender.value,
-      location: location.value
-    })
-  }).then(loadPatients);
-}
-
-function loadPatients() {
-  fetch(API + "/patients")
-  .then(res => res.json())
-  .then(data => {
-    list.innerHTML = "";
-
-    data.forEach(p => {
-      list.innerHTML += `
-      <div class="card">
-        <b>${p.name}</b> (${p.age}) - ${p.location}
-
-        <br><br>
-        <input id="visit-${p.id}" placeholder="Visit notes">
-        <button onclick="addVisit(${p.id})">Add Visit</button>
-
-        <br><br>
-        <button onclick="createReferral(${p.id})">Create Referral</button>
-      </div>`;
-    });
-  });
-}
-
-function addVisit(id) {
-  fetch(API + "/visits", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      patient_id: id,
-      notes: document.getElementById("visit-"+id).value,
-      date: new Date().toISOString()
-    })
-  }).then(() => alert("Visit added"));
-}
-
-function createReferral(id) {
-  fetch(API + "/referrals", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ patient_id: id })
-  }).then(() => alert("Referral created"));
-}
-
-loadPatients();
-</script>
-<script src="script.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

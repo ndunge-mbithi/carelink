@@ -1,10 +1,217 @@
-<h2>CareLink Login</h2>
+<<!DOCTYPE html>
+<html>
+<head>
+  <title>CareLink</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+    }
 
-<input id="username" placeholder="Username">
-<input id="password" type="password" placeholder="Password">
-<button onclick="login()">Login</button>
-git
-<p id="status"></p>
+    .card, .container {
+      background: white;
+      margin: 40px auto;
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
 
+    .navbar {
+      background: white;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
 
-<script src="script.js"></script>
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #4facfe;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #00c6ff;
+    }
+
+    .secondary-btn {
+      background: #6c63ff;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="card">
+  <h2>CareLink</h2>
+  <p>Login to continue</p>
+
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+
+  <p>Demo: admin / 1234</p>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboardPage" class="hidden">
+  <div class="navbar">
+    <h2>Dashboard</h2>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <div class="container">
+    <h3>Add New Patient</h3>
+
+    <form id="patientForm">
+      <input type="text" id="name" placeholder="Patient Name" required>
+      <input type="number" id="age" placeholder="Age" required>
+      <button type="submit">Save Patient</button>
+    </form>
+
+    <button class="secondary-btn" onclick="showPatients()">
+      View Patients
+    </button>
+  </div>
+</div>
+
+<!-- PATIENTS PAGE -->
+<div id="patientsPage" class="hidden">
+  <div class="navbar">
+    <h2>Patient Records</h2>
+    <button onclick="goBack()">← Back</button>
+  </div>
+
+  <div class="container">
+    <h3>All Patients</h3>
+    <ul id="patientList"></ul>
+  </div>
+</div>
+
+<script>
+/* ================= LOGIN ================= */
+document.getElementById("loginForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  if (username === "admin" && password === "1234") {
+    localStorage.setItem("user", username);
+    showDashboard();
+  } else {
+    alert("Invalid login");
+  }
+});
+
+/* ================= NAVIGATION ================= */
+function showDashboard() {
+  document.getElementById("loginPage").classList.add("hidden");
+  document.getElementById("dashboardPage").classList.remove("hidden");
+}
+
+function showPatients() {
+  document.getElementById("dashboardPage").classList.add("hidden");
+  document.getElementById("patientsPage").classList.remove("hidden");
+  loadPatients();
+}
+
+function goBack() {
+  document.getElementById("patientsPage").classList.add("hidden");
+  document.getElementById("dashboardPage").classList.remove("hidden");
+}
+
+function logout() {
+  localStorage.removeItem("user");
+  location.reload();
+}
+
+/* ================= PATIENT STORAGE ================= */
+document.getElementById("patientForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value;
+  const age = document.getElementById("age").value;
+
+  const patient = {
+    name,
+    age,
+    date: new Date().toLocaleDateString()
+  };
+
+  let patients = JSON.parse(localStorage.getItem("patients")) || [];
+  patients.push(patient);
+  localStorage.setItem("patients", JSON.stringify(patients));
+
+  alert("Patient saved!");
+  document.getElementById("patientForm").reset();
+});
+
+/* ================= LOAD PATIENTS ================= */
+function loadPatients() {
+  const list = document.getElementById("patientList");
+  list.innerHTML = "";
+
+  const patients = JSON.parse(localStorage.getItem("patients")) || [];
+
+  if (patients.length === 0) {
+    list.innerHTML = "<p>No patients yet.</p>";
+    return;
+  }
+
+  patients.forEach(p => {
+    const li = document.createElement("li");
+    li.textContent = `${p.name} (Age: ${p.age}) - ${p.date}`;
+    list.appendChild(li);
+  });
+}
+
+/* ================= AUTO LOGIN ================= */
+window.onload = function() {
+  const user = localStorage.getItem("user");
+  if (user) {
+    showDashboard();
+  }
+};
+</script>
+
+</body>
+</html>

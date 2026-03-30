@@ -1,15 +1,34 @@
-<h2>CareLink Dashboard</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CareLink Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-<p>Welcome CHW</p>
+  <div class="navbar">
+    <h2>CareLink Dashboard</h2>
+    <div>
+      <span id="userDisplay"></span>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
 
-<a href="patients.html">Patients</a><br><br>
+  <div class="container">
+    <h3>Add New Patient</h3>
 
-<button onclick="logout()">Logout</button>
+    <form id="patientForm">
+      <input type="text" id="name" placeholder="Patient Name" required>
+      <input type="number" id="age" placeholder="Age" required>
+      <button type="submit">Save Patient</button>
+    </form>
 
-<script>
-function logout() {
-  localStorage.clear();
-  window.location = "index.html";
-}
-</script>
-<script src="script.js"></script>
+    <button class="secondary-btn" onclick="window.location.href='patients.html'">
+      View Patients
+    </button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
