@@ -2,12 +2,19 @@ const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+
+// MIDDLEWARE
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static("public"));
 
+// Serve frontend files (IMPORTANT for Render)
+app.use(express.static(path.join(__dirname)));
+
+// DATABASE
 const db = new sqlite3.Database("./database.db");
 
 // TABLES
@@ -40,9 +47,17 @@ db.serialize(() => {
     status TEXT
   )`);
 
+  // DEFAULT USER
   db.run(`INSERT INTO users (username, password, role)
-    SELECT 'admin', 'admin', 'CHW'
+    SELECT 'admin', '1234', 'CHW'
     WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='admin')`);
+});
+
+// ROUTES
+
+// ROOT (important for deployment)
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 // LOGIN
@@ -106,4 +121,7 @@ app.get("/referrals", (req, res) => {
   });
 });
 
-app.listen(3000, () => console.log("Running on http://localhost:3000"));
+// START SERVER
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
